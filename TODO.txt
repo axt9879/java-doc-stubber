@@ -1,0 +1,15 @@
+Overveiw of project:
+
+user inputs url to java doc class description page AND a destination for the output java class file
+
+the program parses the page and outputs the java class states, constructor and methods as well as their comments to file
+
+TODO list
+    figure out/learn methods to parse through the html file and gather the java class files
+        be sure to analyse multiple java doc webpages to find the common structure
+
+    make functions to out out gathered data to a new class file
+        I imagine the function parsing the data would return something like this:
+            (['states'], ['constructors'], ['methods'])
+
+        I also image the function that create the new class file to take in a similar tuple as a parameter
