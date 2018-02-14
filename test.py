@@ -41,5 +41,23 @@ def test2(r):
     # print(info[1669-indexAdjust:3898+indexAdjust])
 
 
+def test3():
+    """
+    I am testing on getting data for the constructor for a class
+    :return:
+    """
+    r = requests.get("https://cs.rit.edu/~csci142/Labs/04/doc/heroes/Hero.html")
+    data = r.text
+    # find the constructor table
+    constructorIndex = data.find("Constructor</th>")
+    # find the index of the first table column with the <code> tag. this is usually the constructor modifier
+    modifierIndex = data.find("colFirst\"><code>", constructorIndex)
+    modifierEndIndex = data.find("</code>", modifierIndex)
+    # save the slice of data between the two indexes to get the modifier
+    constructorModifier = data[modifierIndex + len("colFirst\"><code>"):modifierEndIndex]
+    print(constructorIndex, modifierIndex, modifierEndIndex)
+    print(constructorModifier)
+
+
 if __name__ == '__main__':
-    test()
+    test3()
