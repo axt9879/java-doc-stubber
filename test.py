@@ -44,6 +44,9 @@ def test2(r):
 def test3():
     """
     I am testing on getting data for the constructor for a class
+
+    this is probably not where we want to grab constructor data from. This finds constructor summary we should look
+    under constructor detail.
     :return:
     """
     r = requests.get("https://cs.rit.edu/~csci142/Labs/04/doc/heroes/Hero.html")
@@ -57,6 +60,10 @@ def test3():
     constructorModifier = data[modifierIndex + len("colFirst\"><code>"):modifierEndIndex]
     print(constructorIndex, modifierIndex, modifierEndIndex)
     print(constructorModifier)
+    # find the constructor and the description
+    constructor = None
+    description = None
+
 
 
 if __name__ == '__main__':
