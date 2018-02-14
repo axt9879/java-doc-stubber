@@ -5,6 +5,10 @@ user inputs url to java doc class description page AND a destination for the out
 the program parses the page and outputs the java class states, constructor and methods as well as their comments to file
 
 TODO list
+    Come up with a project name/code name
+        Ideas:
+            ...
+
     figure out/learn methods to parse through the html file and gather the java class files
         be sure to analyse multiple java doc webpages to find the common structure
 
