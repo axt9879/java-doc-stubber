@@ -88,6 +88,18 @@ def test4():
     #print the constructor for debugging
     print(constructor)
 
+    #SECTION TO FIND THE CONSTRUCTOR'S COMMENTS INCLUDING THE PARAMETER COMMENTS
+
+    #find the comment
+    commentStartIndex = data.find("class = \"block\">", constructorEndIndex) + 15
+    commentEndIndex = data.find("</div>")
+    comment = data[commentStartIndex:commentEndIndex]
+
+    #print the comment for debugging
+    print(constructorEndIndex)
+
+
+
 
 if __name__ == '__main__':
     test4()
