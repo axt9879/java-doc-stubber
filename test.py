@@ -91,12 +91,56 @@ def test4():
     #SECTION TO FIND THE CONSTRUCTOR'S COMMENTS INCLUDING THE PARAMETER COMMENTS
 
     #find the comment
-    commentStartIndex = data.find("class = \"block\">", constructorEndIndex) + 15
-    commentEndIndex = data.find("</div>")
+    commentStartIndex = data.find("class=\"block\">", constructorEndIndex) + 14
+    commentEndIndex = data.find("</div>", constructorEndIndex)
     comment = data[commentStartIndex:commentEndIndex]
 
     #print the comment for debugging
-    print(constructorEndIndex)
+    print(comment)
+    # print(commentStartIndex, commentEndIndex)
+
+    #find the parameter details
+    paramterArea = data.find("paramLabel", commentEndIndex)
+    paramDetails = []
+    movingIndex = commentEndIndex
+    while True:
+        result = findParam(data, movingIndex)
+        if result[1] == -1:
+            break
+        paramDetails.append(result[0])
+        movingIndex = result[1]
+    print(paramDetails)
+
+
+
+def findParam(data, index):
+    """
+    Given an index and some javadoc html, this function finds the next
+    parameter name and parameter detail
+    The function will stop itself if it reaches "=======" which usually
+    means that it has found all the parameters in an area
+    :param data: the html data
+    :param index: the starting index to search from
+    :return:
+    """
+    #find param name
+    paramNameIndex = data.find("<code>", index) + 6
+    paramNameEndIndex = data.find("</code>", paramNameIndex)
+    paramName = data[paramNameIndex:paramNameEndIndex]
+
+    #find param detail or commment
+    paramCommentIndex = data.find("</code>", index) + 7
+    paramCommentEndIndex = data.find("</dd>", paramCommentIndex)
+    paramComment = data[paramCommentIndex:paramCommentEndIndex]
+
+    enderIndex = data.find("=======", index)
+
+    if paramCommentIndex == -1:
+        return (None, None), -1
+    elif paramCommentIndex > enderIndex:
+        return (None, None), -1
+    else:
+        return (paramName, paramComment), paramCommentEndIndex
 
 
 
