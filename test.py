@@ -65,6 +65,29 @@ def test3():
     description = None
 
 
+def test4():
+    """
+    Very similar to test 3 however aiming for Constructor details instead of just
+    the constructor's summary
+
+    Since the html contains special characters, a function will be required to
+    replace the '&...;' with spaces or something.
+    :return:
+    """
+    r = requests.get("https://cs.rit.edu/~csci142/Labs/04/doc/heroes/Hero.html")
+    data = r.text
+
+    # find the contrustor detail part of the page
+    constructorAreaIndex = data.find("CONSTRUCTOR DETAIL")
+
+    #find the actual constructor
+    constructorStartIndex = data.find("<pre>", constructorAreaIndex) + 5
+    constructorEndIndex = data.find("</pre>", constructorStartIndex)
+    constructor = data[constructorStartIndex:constructorEndIndex]
+
+    #print the constructor for debugging
+    print(constructor)
+
 
 if __name__ == '__main__':
-    test3()
+    test4()
