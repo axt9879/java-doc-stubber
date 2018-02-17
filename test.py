@@ -115,7 +115,7 @@ def test4():
 
 def findParam(data, index):
     """
-    Given an index and some javadoc html, this function finds the next
+    Given an index and some javadoc html, this functions finds the next
     parameter name and parameter detail
     The function will stop itself if it reaches "=======" which usually
     means that it has found all the parameters in an area
