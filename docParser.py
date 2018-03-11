@@ -104,7 +104,7 @@ def main():
 
     java = javaclass.JavaClass(className[0],classAccess[0])
     for method in methods.keys():
-        java.addMethod(method,methods[method])
+        java.addToClass("method",method,methods[method])
 
     print()
     print("Testing JavaClass...")

@@ -16,6 +16,7 @@ class JavaClass:
         self.access = access
         self.fields = {}
         self.methods = {}
+        self.constructors = {}
 
     def getName(self):
         """
@@ -36,8 +37,8 @@ class JavaClass:
     def getFields(self):
         """
         Returns a dictionary containing the fields of the class, with
-        name of the field as the key and a string of the modifiers
-        of the field as value
+        name of the field as the key and a list containing a string of the modifiers
+        of the field and the comments for the field as value
 
         :return: a dictionary containing fields
         """
@@ -53,18 +54,18 @@ class JavaClass:
         """
         return self.methods
 
-    def addField(self,name,modifiers):
+    def addField(self,name,info):
         """
         Takes data about a field of the class and adds it to the class
 
         :param name: name of the field
-        :param modifiers: string of modifiers of the field
+        :param info : list containing information about the field
         :return:
         """
         if (name in self.fields.keys()):
             print("The class already contains this field!")
             return
-        self.fields[name] = modifiers
+        self.fields[name] = info
 
     def addMethod(self,name,list):
         """
@@ -78,3 +79,29 @@ class JavaClass:
             print("The class already contains this method!")
             return
         self.methods[name] = list
+
+    def addToClass(self,information,name,list):
+        """
+        Takes in data about the class and stores it according to what type
+        of data it is
+
+        :param information: whether it's a method, field, or constructor
+        :param name: name of the method, field, or constructor
+        :param list: list containing the info
+        :return:
+        """
+        if information == "method":
+            if (name in self.methods.keys()):
+                print("The class already contains this method!")
+                return
+            self.methods[name] = list
+        elif information == "field":
+            if (name in self.fields.keys()):
+                print("The class already contains this method!")
+                return
+            self.fields[name] = list
+        elif information == "constructor":
+            if (name in self.constructors.keys()):
+                print("The class already contains this method!")
+                return
+            self.constructors[name] = list
