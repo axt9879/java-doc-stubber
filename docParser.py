@@ -100,6 +100,33 @@ def main():
     methods = findAllMethods(data)
     print(methods)
 
+    #make the javaclass
+
+    java = javaclass.JavaClass(className[0],classAccess[0])
+    for method in methods.keys():
+        java.addMethod(method,methods[method])
+
+    print()
+    print("Testing JavaClass...")
+    print(java.getAccessModifier()=="public class ")
+    print(java.getName()=="ParseTree")
+    jMethods = java.getMethods()
+    for name in jMethods.keys():
+        print(jMethods[name] == methods[name])
+    print("Test complete!")
+
+    WHITESPACE = "    "
+
+    print()
+    print("Attempting to write to file...")
+    file = open("ParseTree.java","w")
+    file.write(java.getAccessModifier() + java.getName() + "{ \n")
+    for name in jMethods.keys():
+        if name == "compile":
+            continue
+        file.write(WHITESPACE + jMethods[name][0] + "{} \n")
+    file.write("}")
+    print("Writing completed without any errors!")
 
 if __name__ == '__main__':
     main()
