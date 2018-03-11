@@ -120,6 +120,8 @@ def removeOddStuff(string):
 
     return string
 
+def WHITESPACE():
+    return "    "
 
 def main():
     page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/BinaryOperation.html"
@@ -165,7 +167,7 @@ def main():
         print(jMethods[name] == methods[name])
     print("Test complete!")
 
-    WHITESPACE = "    "
+
 
     print()
     print("Attempting to write to file...")
@@ -174,7 +176,7 @@ def main():
     for name in jMethods.keys():
         if name == "compile":
             continue
-        file.write(WHITESPACE + jMethods[name][0] + "{} \n")
+        file.write(WHITESPACE() + jMethods[name][0] + "{} \n")
     file.write("}")
     print("Writing completed without any errors!")
 
