@@ -40,7 +40,7 @@ def findAllMethods(data):
                                                                                       "DATA ========= -->")]
     index = 0
     while data.find("name=", index) != -1:
-        methodName = findBetweenTag(data, "name=\"", "--", index)
+        methodName = findBetweenTag(data, "name=\"", "\">", index)
         index = methodName[1]
         if methodName[0].__contains__("method.detail"):
             continue
@@ -54,6 +54,26 @@ def findAllMethods(data):
         methods[methodName[0]] = (method[0], methodDescription[0])
     return methods
 
+
+def findAllFields(data):
+    methods = {}
+    data = data[data.find("<!-- ============ FIELD DETAIL =========== -->"):data.find("<!-- ========= CONSTRUCTOR DETAIL"
+                                                                                      " ======== -->")]
+    index = 0
+    while data.find("name=", index) != -1:
+        methodName = findBetweenTag(data, "name=\"", "\">", index)
+        index = methodName[1]
+        if methodName[0].__contains__("field.detail"):
+            continue
+
+        # get method signature
+        method = findBetweenTag(data, "<pre>", "</pre>", index)
+
+        # get method description
+        methodDescription = findBetweenTag(data, "\"block\">", "</div>", index)
+
+        methods[methodName[0]] = (method[0], methodDescription[0])
+    return methods
 
 def removeOddStuff(string):
     """Takes a string and removes '<', '>' and everything between them
@@ -72,6 +92,27 @@ def removeOddStuff(string):
             string = string[:start] + string[end + 1:]
         i += 1
 
+    # remove - amd -- and replace the single dashes with < then >
+    i = 0
+    while string.find("-") != -1:
+        if i > 5:
+            break
+        i += 1
+        start = string.find("-")
+
+        next = -1
+        if string.find("-", start) != -1:
+            next = string.find("-", start)
+            isAnother = True
+        else:
+            isAnother = False
+
+        if string[start] == string[start + 1] == "-":
+            string = string[:start] + string[start + 2:]
+
+        # if string[start] != string[start + 1] and isAnother and start + 1 <= string.__len__() - 1:
+        #     string = string[:start] + "<" + string[start + 1:next] + ">" + string[next + 1:]
+
     # remove symbols
     symbols = {"&nbsp;": " ", "&#8203;": "", "&lt": "<", "&gt": ">", "\n": "", ";": ""}
     for i in symbols.keys():
@@ -81,7 +122,7 @@ def removeOddStuff(string):
 
 
 def main():
-    page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/ParseTree.html"
+    page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/BinaryOperation.html"
     response = requests.get(page)
     data = response.text
     className = findBetweenTag(data, "<title>", "</title>")
@@ -98,7 +139,16 @@ def main():
     print("Class Constructor", classConstructor)
     print("Class Constructor Params", classConstructorParams, "\n")
     methods = findAllMethods(data)
-    print(methods)
+    fields = findAllFields(data)
+    print("\nMethods")
+    print("=======")
+    for method in methods:
+        print(method, "\n\t", methods[method])
+    print("\nFields")
+    print("======")
+    for field in fields:
+        print(field, "\n\t",  fields[field])
+
 
     #make the javaclass
 
