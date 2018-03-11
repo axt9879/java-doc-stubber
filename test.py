@@ -146,4 +146,9 @@ def findParam(data, index):
 
 
 if __name__ == '__main__':
-    test4()
+    # test4()
+    str1 = "anthony"
+    str2 = "thon"
+    str3 = "THON"
+    string = str1.replace(str2, str3)
+    print(string)
