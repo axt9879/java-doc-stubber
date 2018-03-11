@@ -41,12 +41,20 @@ def writeMethods(file,dict):
     for name in dict.keys():
         docString = dict[name][1]
         methodName = dict[name][0]
-        file.write(WHITESPACE() + "/*")
-        file.write(WHITESPACE() + "* " + docString)
-        file.write(WHITESPACE() + "*/")
-        file.write(WHITESPACE() + methodName + "{" + getMethodStub(methodName) + "}")
+        file.write( "\t/*\n")
+        file.write("\t* " + docString + "\n")
+        file.write("\t*/\n")
+        file.write("\t" + methodName + "{" + getMethodStub(methodName) + "}\n")
         print()
 
+def writeFields(file,dict):
+    for name in dict.keys():
+        docString = dict[name][1]
+        infoName = dict[name][0]
+        file.write("\t/*\n")
+        file.write("\t* " + docString + "\n")
+        file.write("\t*/\n")
+        file.write("\t" + infoName + "\n")
 
 def main():
     page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/ParseTree.html"
@@ -59,7 +67,9 @@ def main():
     for method in methods.keys():
         java.addToClass("method",method,methods[method])
     file = open("ParseTree.java","w")
+    file.write(java.getAccessModifier() + java.getName() + "{\n")
     writeMethods(file,java.getMethods())
+    file.write("}")
 
 if __name__ == '__main__':
     main()
