@@ -45,7 +45,7 @@ def writeMethods(file,dict):
         file.write("\t* " + docString + "\n")
         file.write("\t*/\n")
         file.write("\t" + methodName + "{" + getMethodStub(methodName) + "}\n")
-        print()
+        file.write("\n")
 
 def writeFields(file,dict):
     for name in dict.keys():
@@ -55,20 +55,25 @@ def writeFields(file,dict):
         file.write("\t* " + docString + "\n")
         file.write("\t*/\n")
         file.write("\t" + infoName + "\n")
+        file.write("\n")
 
 def main():
-    page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/ParseTree.html"
+    page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/BinaryOperation.html"
     response = requests.get(page)
     data = response.text
     className = findBetweenTag(data, "<title>", "</title>")
     classAccess = findBetweenTag(data, "<pre>", "<span")
-    java = JavaClass(className[0],classAccess[0])
+    #java = JavaClass(className[0],classAccess[0])
     methods = findAllMethods(data)
-    for method in methods.keys():
-        java.addToClass("method",method,methods[method])
+    fields = findAllFields(data)
+    #for method in methods.keys():
+        #java.addToClass("method",method,methods[method])
+    #for field in fields.keys():
+        #java.addToClass("field",field,fields[field])
     file = open("ParseTree.java","w")
-    file.write(java.getAccessModifier() + java.getName() + "{\n")
-    writeMethods(file,java.getMethods())
+    file.write(classAccess[0] + className[0] + "{\n")
+    writeFields(file,fields)
+    writeMethods(file,methods)
     file.write("}")
 
 if __name__ == '__main__':
