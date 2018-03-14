@@ -38,8 +38,10 @@ def findAllMethods(data):
     methods = {}
     data = data[data.find("<!-- ============ METHOD DETAIL ========== -->"):data.find("<!-- ========= END OF CLASS "
                                                                                       "DATA ========= -->")]
+
     index = 0
     while data.find("name=", index) != -1:
+        hasOverride = False
         methodName = findBetweenTag(data, "name=\"", "\">", index)
         index = methodName[1]
         if methodName[0].__contains__("method.detail"):
@@ -50,29 +52,43 @@ def findAllMethods(data):
 
         # get method description
         methodDescription = findBetweenTag(data, "\"block\">", "</div>", index)
+        index = methodDescription[1]
+
+        # check if Has Override
+        if (data.find("Overrides:", index) != -1 and data.find("Overrides:", index) < data.find("<a name=", index)) or \
+                (data.find("Overrides:", index) != -1 and data.find("<a name=", index) == -1):
+            hasOverride = True
+            index = data.find("Overrides:", index)
+            index = data.find("</dd>", index)
 
         # get parameters
         params = {}
         j = 0
-        if data.find("paramLabel", index) != -1:
-            index = data.find("paramLabel", index)
-            while data.find("<dd><code>", index) != -1 and data.find("<dd><code>", index) < data.find("<a name=", index):
-                if j > 10:
-                    break
-                paramName = findBetweenTag(data, "<dd><code>", "</code>", index)
-                paramDetails = findBetweenTag(data, "</code> - ", "</dd>", paramName[1])
-                params[paramName[0]] = paramDetails[0]
-                index = paramDetails[1]
-                j += 1
+        if data.find("paramLabel", index) != -1 and data.find("<dd><code>", index) < data.find("<a name=", index):
+            if (data.find("<dd><code>", index) != -1 and data.find("<dd><code>", index) < data.find("Overrides:", index) \
+                    or (data.find("<dd><code>", index) != -1 and data.find("Overrides:") == -1)):
+                index = data.find("paramLabel", index)
+                if (data.find("<dd><code>", index) != -1 and data.find("<dd><code>", index) < data.find("returnLabel",
+                                                                                                        index)) \
+                        or (data.find("<dd><code>", index) != -1 and data.find("returnLabel") == -1):
+                    while data.find("<dd><code>", index) != -1 and data.find("<dd><code>", index) < data.find(
+                            "<a name=", index):
+                        if j > 10:
+                            break
+                        paramName = findBetweenTag(data, "<dd><code>", "</code>", index)
+                        paramDetails = findBetweenTag(data, "</code> - ", "</dd>", paramName[1])
+                        params[paramName[0]] = paramDetails[0]
+                        index = paramDetails[1]
+                        j += 1
 
         # get return
         returnDetails = None
-        if (data.find("returnLabel", index) != -1 and data.find("returnLabel", index) < data.find("<a name=", index)) or\
+        if (data.find("returnLabel", index) != -1 and data.find("returnLabel", index) < data.find("<a name=", index)) or \
                 (data.find("returnLabel", index) != -1 and data.find("<a name=", index) == -1):
             index = data.find("returnLabel", index)
             returnDetails = findBetweenTag(data, "<dd>", "</dd>", index)[0]
 
-        methods[methodName[0]] = (method[0], methodDescription[0], params, returnDetails)
+        methods[methodName[0]] = (method[0], methodDescription[0], params, returnDetails, hasOverride)
     return methods
 
 
@@ -94,6 +110,7 @@ def findAllFields(data):
 
         methods[methodName[0]] = (method[0], methodDescription[0])
     return methods
+
 
 def removeOddStuff(string):
     """Takes a string and removes '<', '>' and everything between them
@@ -128,12 +145,12 @@ def removeOddStuff(string):
             isAnother = False
 
         # if start + 1 < string.__len__() - 1:
-        if start < string.__len__() -1:
+        if start < string.__len__() - 1:
             if string[start] == string[start + 1] == "-":
                 string = string[:start] + string[start + 2:]
-        if start < string.__len__() -2:
+        if start < string.__len__() - 2:
             if string[start] != string[start + 1] and isAnother:
-                string = string[:start] + " <" + string[start+1:next1] + "> " + string[next1 + 1:]
+                string = string[:start] + " <" + string[start + 1:next1] + "> " + string[next1 + 1:]
 
     # remove symbols
     symbols = {"&nbsp;": " ", "&#8203;": "", "&lt": "<", "&gt": ">", "\n": "", ";": ""}
@@ -142,11 +159,13 @@ def removeOddStuff(string):
 
     return string
 
+
 def WHITESPACE():
     return "    "
 
+
 def main():
-    page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/BinaryOperation.html"
+    page = "https://www.cs.rit.edu/~csci142/Labs/07/doc/bee/Bee.html"
     response = requests.get(page)
     data = response.text
     className = findBetweenTag(data, "<title>", "</title>")
@@ -171,30 +190,27 @@ def main():
     print("\nFields")
     print("======")
     for field in fields:
-        print(field, "\n\t",  fields[field])
+        print(field, "\n\t", fields[field])
     print("\n", fields)
 
+    # make the javaclass
 
-    #make the javaclass
-
-    java = javaclass.JavaClass(className[0],classAccess[0])
+    java = javaclass.JavaClass(className[0], classAccess[0])
     for method in methods.keys():
-        java.addToClass("method",method,methods[method])
+        java.addToClass("method", method, methods[method])
 
     print()
     print("Testing JavaClass...")
-    print(java.getAccessModifier()=="public class ")
-    print(java.getName()=="ParseTree")
+    print(java.getAccessModifier() == "public class ")
+    print(java.getName() == "ParseTree")
     jMethods = java.getMethods()
     for name in jMethods.keys():
         print(jMethods[name] == methods[name])
     print("Test complete!")
 
-
-
     print()
     print("Attempting to write to file...")
-    file = open("ParseTree.java","w")
+    file = open("ParseTree.java", "w")
     file.write(java.getAccessModifier() + java.getName() + "{ \n")
     for name in jMethods.keys():
         if name == "compile":
@@ -203,7 +219,6 @@ def main():
     file.write("}")
     print("Writing completed without any errors!")
 
+
 if __name__ == '__main__':
     main()
-
-
