@@ -33,7 +33,7 @@ def findAllMethods(data):
     :param data: the html data
     :return: a dictionary of
             key         :   value
-            methodName  :   (method signature, method description)
+            methodName  :   (method signature, method description, dict of params, returnDetails(String or None))
     """
     methods = {}
     data = data[data.find("<!-- ============ METHOD DETAIL ========== -->"):data.find("<!-- ========= END OF CLASS "
@@ -51,7 +51,28 @@ def findAllMethods(data):
         # get method description
         methodDescription = findBetweenTag(data, "\"block\">", "</div>", index)
 
-        methods[methodName[0]] = (method[0], methodDescription[0])
+        # get parameters
+        params = {}
+        j = 0
+        if data.find("paramLabel", index) != -1:
+            index = data.find("paramLabel", index)
+            while data.find("<dd><code>", index) != -1 and data.find("<dd><code>", index) < data.find("<a name=", index):
+                if j > 10:
+                    break
+                paramName = findBetweenTag(data, "<dd><code>", "</code>", index)
+                paramDetails = findBetweenTag(data, "</code> - ", "</dd>", paramName[1])
+                params[paramName[0]] = paramDetails[0]
+                index = paramDetails[1]
+                j += 1
+
+        # get return
+        returnDetails = None
+        if (data.find("returnLabel", index) != -1 and data.find("returnLabel", index) < data.find("<a name=", index)) or\
+                (data.find("returnLabel", index) != -1 and data.find("<a name=", index) == -1):
+            index = data.find("returnLabel", index)
+            returnDetails = findBetweenTag(data, "<dd>", "</dd>", index)[0]
+
+        methods[methodName[0]] = (method[0], methodDescription[0], params, returnDetails)
     return methods
 
 
