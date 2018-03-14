@@ -57,8 +57,7 @@ def findAllMethods(data):
 
 def findAllFields(data):
     methods = {}
-    data = data[data.find("<!-- ============ FIELD DETAIL =========== -->"):data.find("<!-- ========= CONSTRUCTOR DETAIL"
-                                                                                      " ======== -->")]
+    data = data[data.find("<!-- ============ FIELD DETAIL =========== -->"):data.find("<!-- ========= CONSTRUCTOR ")]
     index = 0
     while data.find("name=", index) != -1:
         methodName = findBetweenTag(data, "name=\"", "\">", index)
@@ -100,18 +99,20 @@ def removeOddStuff(string):
         i += 1
         start = string.find("-")
 
-        next = -1
+        next1 = -1
         if string.find("-", start) != -1:
-            next = string.find("-", start)
+            next1 = string.find("-", start + 1)
             isAnother = True
         else:
             isAnother = False
 
-        if string[start] == string[start + 1] == "-":
-            string = string[:start] + string[start + 2:]
-
-        # if string[start] != string[start + 1] and isAnother and start + 1 <= string.__len__() - 1:
-        #     string = string[:start] + "<" + string[start + 1:next] + ">" + string[next + 1:]
+        # if start + 1 < string.__len__() - 1:
+        if start < string.__len__() -1:
+            if string[start] == string[start + 1] == "-":
+                string = string[:start] + string[start + 2:]
+        if start < string.__len__() -2:
+            if string[start] != string[start + 1] and isAnother:
+                string = string[:start] + " <" + string[start+1:next1] + "> " + string[next1 + 1:]
 
     # remove symbols
     symbols = {"&nbsp;": " ", "&#8203;": "", "&lt": "<", "&gt": ">", "\n": "", ";": ""}
@@ -150,6 +151,7 @@ def main():
     print("======")
     for field in fields:
         print(field, "\n\t",  fields[field])
+    print("\n", fields)
 
 
     #make the javaclass
