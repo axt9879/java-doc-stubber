@@ -41,9 +41,18 @@ def writeMethods(file,dict):
     for name in dict.keys():
         docString = dict[name][1]
         methodName = dict[name][0]
+        params = dict[name][2]
+        returns = dict[name][3]
+        override = dict[name][4]
+        for parameter in params.keys():
+            docString += "\n\t* @param " + parameter + params[parameter]
+        if returns != None:
+            docString += "\n\t* @return " + returns
         file.write( "\t/*\n")
         file.write("\t* " + docString + "\n")
         file.write("\t*/\n")
+        if override:
+            file.write("\t@Override\n")
         file.write("\t" + methodName + "{" + getMethodStub(methodName) + "}\n")
         file.write("\n")
 
@@ -58,7 +67,7 @@ def writeFields(file,dict):
         file.write("\n")
 
 def main():
-    page = "https://www.cs.rit.edu/~csci142/Projects/Dendron/doc/dendron/tree/BinaryOperation.html"
+    page = "https://www.cs.rit.edu/~csci142/Labs/07/doc/bee/Bee.html"
     response = requests.get(page)
     data = response.text
     className = findBetweenTag(data, "<title>", "</title>")
